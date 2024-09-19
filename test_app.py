@@ -99,7 +99,7 @@ class FlaskAppTests(unittest.TestCase):
     def test_code_complexity(self):
         """Measure code complexity using Radon."""
         result = subprocess.run(['radon', 'cc', '--total', '--show-complexity', __file__], capture_output=True, text=True)
-        print("Code Complexity Analysis:")
+        print("Code Complexity Analysis for test_app.py::")
         print(result.stdout)
 
         print("Code Complexity Analysis for server.py:")
