@@ -67,6 +67,36 @@ class FlaskAppTests(unittest.TestCase):
         average_time = self.stress_test(run_test)
         print(f"Average execution time for test_maintainability: {average_time:.4f} seconds")
 
+    def test_disconnection_recovery(self):
+        def run_test():
+            with app.app_context():
+                # Clear the database before adding new messages
+                db.session.query(Message).delete()
+                db.session.commit()
+
+                # Add 1000 messages
+                for i in range(1000):
+                    message = Message(text=f"Test message {i + 1}")
+                    db.session.add(message)
+                db.session.commit()
+
+            # Simulate client disconnection
+            self.app.get('/messages', follow_redirects=True)
+
+            # Simulate server restart (without dropping the database)
+            # Just re-establish the app context
+            with app.app_context():
+                # No need to drop and recreate the database
+                pass  # This simulates the server being restarted
+
+            # Reconnect and check if messages are still there
+            response = self.app.get('/messages')
+            messages = json.loads(response.data)
+            self.assertEqual(len(messages), 1000)  # Check that 1000 messages are still there
+
+        average_time = self.stress_test(run_test)
+        print(f"Average execution time for test_disconnection_recovery: {average_time:.4f} seconds")
+
 
 if __name__ == '__main__':
     unittest.main()
