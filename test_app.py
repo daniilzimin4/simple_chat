@@ -1,9 +1,9 @@
 import unittest
 import time
 import json
+import subprocess
 from server import app, db, Message
 from sqlalchemy import inspect
-
 
 class FlaskAppTests(unittest.TestCase):
     def setUp(self):
@@ -86,7 +86,6 @@ class FlaskAppTests(unittest.TestCase):
             # Simulate server restart (without dropping the database)
             # Just re-establish the app context
             with app.app_context():
-                # No need to drop and recreate the database
                 pass  # This simulates the server being restarted
 
             # Reconnect and check if messages are still there
@@ -97,6 +96,15 @@ class FlaskAppTests(unittest.TestCase):
         average_time = self.stress_test(run_test)
         print(f"Average execution time for test_disconnection_recovery: {average_time:.4f} seconds")
 
+    def test_code_complexity(self):
+        """Measure code complexity using Radon."""
+        result = subprocess.run(['radon', 'cc', '--total', '--show-complexity', __file__], capture_output=True, text=True)
+        print("Code Complexity Analysis:")
+        print(result.stdout)
+
+        print("Code Complexity Analysis for server.py:")
+        result_server = subprocess.run(['radon', 'cc', '--total', '--show-complexity', 'server.py'], capture_output=True, text=True)
+        print(result_server.stdout)
 
 if __name__ == '__main__':
     unittest.main()
