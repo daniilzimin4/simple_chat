@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Чат</title>
+    <title>Chat</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <style>
         body { font-family: Arial, sans-serif; }
@@ -14,13 +14,13 @@
 <body>
     <h1>Чат</h1>
     <div id="messages"></div>
-    <input id="message-input" type="text" placeholder="Введите сообщение..." />
-    <button id="send-button">Отправить</button>
+    <input id="message-input" type="text" placeholder="Write your message here..." />
+    <button id="send-button">Send</button>
     <div id="message-count"></div>
 
     <script>
         const socket = io();
-        
+
         document.getElementById('send-button').onclick = function() {
             const messageInput = document.getElementById('message-input');
             const message = messageInput.value;
@@ -29,13 +29,13 @@
                 messageInput.value = '';
             }
         };
-        
+
         socket.on('message', function(data) {
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML += `<div>[${data.time}] ${data.text}</div>`;
             updateMessageCount();
         });
-        
+
         function updateMessageCount() {
             fetch('/messages/count')
                 .then(response => response.json())
@@ -43,7 +43,7 @@
                     document.getElementById('message-count').innerText = `Total number of messages: ${data.count}`;
                 });
         }
-        
+
         function fetchOldMessages() {
             fetch('/messages')
                 .then(response => response.json())
@@ -54,7 +54,7 @@
                     });
                 });
         }
-        
+
         window.onload = function() {
             updateMessageCount();
             fetchOldMessages();
