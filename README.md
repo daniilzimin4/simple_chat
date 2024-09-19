@@ -9,6 +9,7 @@
 
 ##### Stress test:
 ```
+Code Complexity Analysis for test_app.py
     C 8:0 FlaskAppTests - A (2)
     M 21:4 FlaskAppTests.stress_test - A (2)
     M 9:4 FlaskAppTests.setUp - A (1)
