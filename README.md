@@ -6,3 +6,10 @@
 
 ##### How to test it:
 ```python -m unittest test_app.py```
+
+##### Stress test:
+```
+.Average execution time for test_maintainability: 0.0001 seconds
+.Average execution time for test_recoverability: 0.0311 seconds
+.Average execution time for test_time_behavior: 0.0003 seconds
+```
