@@ -3,38 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Just chat</title>
+    <title>Чат</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <style>
         body { font-family: Arial, sans-serif; }
-        #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
-        #messageInput { width: 80%; }
+        #messages { margin-bottom: 20px; }
+        #message-input { width: 300px; }
     </style>
 </head>
 <body>
+    <h1>Чат</h1>
     <div id="messages"></div>
-    <input id="messageInput" type="text" placeholder="Write message...">
-    <button id="sendButton">Send</button>
+    <input id="message-input" type="text" placeholder="Введите сообщение..." />
+    <button id="send-button">Отправить</button>
+    <div id="message-count"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
         const socket = io();
-
-        const messagesDiv = document.getElementById('messages');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-
-        sendButton.addEventListener('click', () => {
+        
+        document.getElementById('send-button').onclick = function() {
+            const messageInput = document.getElementById('message-input');
             const message = messageInput.value;
             if (message) {
-                socket.emit('newMessage', { text: message, time: new Date().toLocaleString() });
+                socket.emit('send_message', { text: message });
                 messageInput.value = '';
             }
+        };
+        
+        socket.on('message', function(data) {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<div>[${data.time}] ${data.text}</div>`;
+            updateMessageCount();
         });
-
-        socket.on('message', (message) => {
-            messagesDiv.innerHTML += `<div>[${message.time}] ${message.text}</div>`;
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        });
+        
+        function updateMessageCount() {
+            fetch('/messages/count')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('message-count').innerText = `Total number of messages: ${data.count}`;
+                });
+        }
+        
+        function fetchOldMessages() {
+            fetch('/messages')
+                .then(response => response.json())
+                .then(data => {
+                    const messagesDiv = document.getElementById('messages');
+                    data.forEach(msg => {
+                        messagesDiv.innerHTML += `<div>[${msg.time}] ${msg.text}</div>`;
+                    });
+                });
+        }
+        
+        window.onload = function() {
+            updateMessageCount();
+            fetchOldMessages();
+        };
     </script>
 </body>
 </html>
